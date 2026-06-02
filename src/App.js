@@ -23,22 +23,18 @@ function App() {
   const handleAnalyze = async () => {
     if (!analyzeImage) return;
     setAiStatus('解析中...');
-
     try {
       const formData = new FormData();
       formData.append('image', analyzeImage);
-
       const res = await fetch('http://localhost:5001/api/analyze', {
         method: 'POST',
         body: formData,
       });
-
       const data = await res.json();
       if (!res.ok) {
         setAiStatus(`エラー: ${data.error}`);
         return;
       }
-
       setName(data.recipe.name || '');
       setIngredients(data.recipe.ingredients || '');
       setSteps(data.recipe.steps || '');
@@ -46,6 +42,13 @@ function App() {
     } catch (e) {
       setAiStatus(`エラー: ${e.message}`);
     }
+  };
+
+  // ① キャンセル時に全フィールドをリセット
+  const handleCancel = () => {
+    setShowModal(false);
+    setName(''); setIngredients(''); setSteps(''); setUrl('');
+    setAnalyzeImage(null); setCardImage(null); setCardImagePreview(null); setAiStatus('');
   };
 
   const addRecipe = () => {
@@ -60,34 +63,49 @@ function App() {
     <div style={{ minHeight: '100vh', background: '#fdf6f0', fontFamily: "'Helvetica Neue', sans-serif" }}>
       <div style={{ background: '#fff', borderBottom: '1px solid #eee', padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: '#333' }}>🍳 Recipe Box</h1>
+        {/* ② hoverクラスを追加 */}
         <button
+          className="btn-primary"
           onClick={() => setShowModal(true)}
-          style={{ background: '#e07b54', color: '#fff', border: 'none', borderRadius: 24, padding: '10px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+          style={{ borderRadius: 24, padding: '10px 20px', fontSize: 14, fontWeight: 600 }}
         >
           ＋ 新規レシピ
         </button>
       </div>
 
-      <div style={{ padding: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
-        {recipes.map(r => (
-          <div key={r.id} style={{ background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.08)' }}>
-            {r.cardImagePreview
-              ? <img src={r.cardImagePreview} alt={r.name} style={{ width: '100%', height: 200, objectFit: 'cover' }} />
-              : <div style={{ width: '100%', height: 200, background: '#f5f0eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>🍽️</div>
-            }
-            <div style={{ padding: 16 }}>
-              <h2 style={{ margin: '0 0 8px', fontSize: 18, color: '#333' }}>{r.name}</h2>
-              <p style={{ margin: '0 0 6px', fontSize: 13, color: '#666' }}><b>材料：</b>{r.ingredients}</p>
-              <p style={{ margin: '0 0 10px', fontSize: 13, color: '#666' }}><b>作り方：</b>{r.steps}</p>
-              {r.url && (
-                <a href={r.url} target="_blank" rel="noopener noreferrer"
-                  style={{ color: '#e07b54', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
-                  レシピサイトを見る ↗
-                </a>
-              )}
-            </div>
+      <div style={{ padding: 24 }}>
+        {/* ③ 空の状態を表示 */}
+        {recipes.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '80px 24px', color: '#bbb' }}>
+            <div style={{ fontSize: 64, marginBottom: 16 }}>🍽️</div>
+            <p style={{ fontSize: 16, margin: 0, lineHeight: 1.8 }}>
+              まだレシピがありません。<br />
+              ＋ 新規レシピから追加してみましょう！
+            </p>
           </div>
-        ))}
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+            {recipes.map(r => (
+              <div key={r.id} style={{ background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.08)' }}>
+                {r.cardImagePreview
+                  ? <img src={r.cardImagePreview} alt={r.name} style={{ width: '100%', height: 200, objectFit: 'cover' }} />
+                  : <div style={{ width: '100%', height: 200, background: '#f5f0eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>🍽️</div>
+                }
+                <div style={{ padding: 16 }}>
+                  <h2 style={{ margin: '0 0 8px', fontSize: 18, color: '#333' }}>{r.name}</h2>
+                  <p style={{ margin: '0 0 6px', fontSize: 13, color: '#666' }}><b>材料：</b>{r.ingredients}</p>
+                  <p style={{ margin: '0 0 10px', fontSize: 13, color: '#666' }}><b>作り方：</b>{r.steps}</p>
+                  {r.url && (
+                    <a href={r.url} target="_blank" rel="noopener noreferrer"
+                      style={{ color: '#e07b54', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+                      レシピサイトを見る ↗
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {showModal && (
@@ -99,8 +117,11 @@ function App() {
               <p style={{ margin: '0 0 10px', fontWeight: 600, color: '#333' }}>🤖 AIでレシピを解析</p>
               <div style={{ display: 'flex', gap: 8 }}>
                 <input type="file" accept="image/*" onChange={e => setAnalyzeImage(e.target.files[0])} style={{ flex: 1, fontSize: 13 }} />
-                <button onClick={handleAnalyze}
-                  style={{ background: '#e07b54', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 14px', fontSize: 13, cursor: 'pointer' }}>
+                <button
+                  className="btn-primary"
+                  onClick={handleAnalyze}
+                  style={{ borderRadius: 8, padding: '8px 14px', fontSize: 13 }}
+                >
                   AIで解析
                 </button>
               </div>
@@ -131,12 +152,19 @@ function App() {
             ))}
 
             <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-              <button onClick={addRecipe}
-                style={{ flex: 1, background: '#e07b54', color: '#fff', border: 'none', borderRadius: 8, padding: '10px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              <button
+                className="btn-primary"
+                onClick={addRecipe}
+                style={{ flex: 1, borderRadius: 8, padding: '10px', fontSize: 14, fontWeight: 600 }}
+              >
                 レシピを追加
               </button>
-              <button onClick={() => setShowModal(false)}
-                style={{ flex: 1, background: '#f0f0f0', color: '#555', border: 'none', borderRadius: 8, padding: '10px', fontSize: 14, cursor: 'pointer' }}>
+              {/* ① キャンセルでリセット */}
+              <button
+                className="btn-secondary"
+                onClick={handleCancel}
+                style={{ flex: 1, borderRadius: 8, padding: '10px', fontSize: 14 }}
+              >
                 キャンセル
               </button>
             </div>
