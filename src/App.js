@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 
 function App() {
-  const [recipes, setRecipes] = useState([]);
+  const [recipes, setRecipes] = useState(() => {
+  const saved = localStorage.getItem('recipes');
+  return saved ? JSON.parse(saved) : [];
+});
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState('');
   const [ingredients, setIngredients] = useState('');
@@ -58,6 +61,10 @@ function App() {
     setAnalyzeImage(null); setCardImage(null); setCardImagePreview(null); setAiStatus('');
     setShowModal(false);
   };
+
+  React.useEffect(() => {
+  localStorage.setItem('recipes', JSON.stringify(recipes));
+}, [recipes]);
 
   return (
     <div style={{ minHeight: '100vh', background: '#fdf6f0', fontFamily: "'Helvetica Neue', sans-serif" }}>
