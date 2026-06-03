@@ -36,3 +36,17 @@ code {
 .btn-secondary:hover {
   background: #ddd;
 }
+
+.btn-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.btn-delete:hover {
+  background: #ffe0e0;
+}

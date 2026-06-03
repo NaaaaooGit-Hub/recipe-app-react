@@ -62,6 +62,10 @@ function App() {
     setShowModal(false);
   };
 
+  const deleteRecipe = (id) => {
+  setRecipes(recipes.filter(r => r.id !== id));
+  };
+
   React.useEffect(() => {
   localStorage.setItem('recipes', JSON.stringify(recipes));
 }, [recipes]);
@@ -99,9 +103,42 @@ function App() {
                   : <div style={{ width: '100%', height: 200, background: '#f5f0eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>🍽️</div>
                 }
                 <div style={{ padding: 16 }}>
-                  <h2 style={{ margin: '0 0 8px', fontSize: 18, color: '#333' }}>{r.name}</h2>
-                  <p style={{ margin: '0 0 6px', fontSize: 13, color: '#666' }}><b>材料：</b>{r.ingredients}</p>
-                  <p style={{ margin: '0 0 10px', fontSize: 13, color: '#666' }}><b>作り方：</b>{r.steps}</p>
+
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <h2 style={{ margin: 0, fontSize: 18, color: '#333' }}>{r.name}</h2>
+                  <button
+                      className="btn-delete"
+
+                       onClick={() => {
+                        if (window.confirm('このレシピを削除しますか？')) {
+                            deleteRecipe(r.id);
+                               }
+                            }}
+
+
+                  >
+                         🗑️
+                    </button>
+                    </div>
+
+
+
+
+
+                  <div style={{ margin: '0 0 6px', fontSize: 13, color: '#666' }}>
+                  <b>材料：</b>
+                    {r.ingredients.split('\n').map((item, i) => (
+                  <div key={i}>• {item}</div>
+                                              ))}
+                  </div>
+                  <div style={{ margin: '0 0 10px', fontSize: 13, color: '#666' }}>
+                  <b>作り方：</b>
+                      {r.steps.split('\n').map((item, i) => (
+                  <div key={i}>{item}</div>
+                                                    ))}
+                  </div>
+
                   {r.url && (
                     <a href={r.url} target="_blank" rel="noopener noreferrer"
                       style={{ color: '#e07b54', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
