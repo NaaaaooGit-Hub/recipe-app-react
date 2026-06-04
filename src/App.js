@@ -6,6 +6,7 @@ function App() {
   return saved ? JSON.parse(saved) : [];
 });
   const [showModal, setShowModal] = useState(false);
+  const [editId, setEditId] = useState(null);
   const [name, setName] = useState('');
   const [ingredients, setIngredients] = useState('');
   const [steps, setSteps] = useState('');
@@ -55,16 +56,40 @@ function App() {
   };
 
   const addRecipe = () => {
-    if (!name) return;
+  if (!name) return;
+  
+  if (editId) {
+    // 編集モード：既存のレシピを更新
+    setRecipes(recipes.map(r => 
+      r.id === editId 
+        ? { ...r, name, ingredients, steps, url }
+        : r
+    ));
+    setEditId(null);
+  } else {
+    // 新規追加モード
     setRecipes([...recipes, { id: Date.now(), name, ingredients, steps, url, cardImagePreview }]);
-    setName(''); setIngredients(''); setSteps(''); setUrl('');
-    setAnalyzeImage(null); setCardImage(null); setCardImagePreview(null); setAiStatus('');
-    setShowModal(false);
-  };
+  }
+  
+  setName(''); setIngredients(''); setSteps(''); setUrl('');
+  setAnalyzeImage(null); setCardImage(null); setCardImagePreview(null); setAiStatus('');
+  setShowModal(false);
+};
+
+  
 
   const deleteRecipe = (id) => {
   setRecipes(recipes.filter(r => r.id !== id));
   };
+
+  const startEdit = (r) => {
+  setEditId(r.id);
+  setName(r.name);
+  setIngredients(r.ingredients);
+  setSteps(r.steps);
+  setUrl(r.url || '');
+  setShowModal(true);
+};
 
   React.useEffect(() => {
   localStorage.setItem('recipes', JSON.stringify(recipes));
@@ -95,6 +120,7 @@ function App() {
             </p>
           </div>
         ) : (
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
             {recipes.map(r => (
               <div key={r.id} style={{ background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.08)' }}>
@@ -107,24 +133,25 @@ function App() {
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                   <h2 style={{ margin: 0, fontSize: 18, color: '#333' }}>{r.name}</h2>
-                  <button
+                  <div style={{ display: 'flex', gap: 4 }}>
+                   <button
                       className="btn-delete"
-
-                       onClick={() => {
-                        if (window.confirm('このレシピを削除しますか？')) {
+                    onClick={() => startEdit(r)}
+                    >
+                        🖊️
+                       </button>
+                        <button
+                        className="btn-delete"
+                    onClick={() => {
+                         if (window.confirm('このレシピを削除しますか？')) {
                             deleteRecipe(r.id);
-                               }
-                            }}
-
-
-                  >
-                         🗑️
-                    </button>
-                    </div>
-
-
-
-
+                          }
+                      }}
+                    >
+                       🗑️
+                      </button>
+                  </div>
+                </div>
 
                   <div style={{ margin: '0 0 6px', fontSize: 13, color: '#666' }}>
                   <b>材料：</b>
