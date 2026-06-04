@@ -55,28 +55,29 @@ function App() {
     setAnalyzeImage(null); setCardImage(null); setCardImagePreview(null); setAiStatus('');
   };
 
-  const addRecipe = () => {
+  const addRecipe = async () => {
   if (!name) return;
   
+  let imageUrl = cardImagePreview;
+  if (cardImage) {
+    imageUrl = await uploadToCloudinary(cardImage);
+  }
+  
   if (editId) {
-    // 編集モード：既存のレシピを更新
     setRecipes(recipes.map(r => 
       r.id === editId 
-        ? { ...r, name, ingredients, steps, url }
+        ? { ...r, name, ingredients, steps, url, cardImagePreview: imageUrl }
         : r
     ));
     setEditId(null);
   } else {
-    // 新規追加モード
-    setRecipes([...recipes, { id: Date.now(), name, ingredients, steps, url, cardImagePreview }]);
+    setRecipes([...recipes, { id: Date.now(), name, ingredients, steps, url, cardImagePreview: imageUrl }]);
   }
   
   setName(''); setIngredients(''); setSteps(''); setUrl('');
   setAnalyzeImage(null); setCardImage(null); setCardImagePreview(null); setAiStatus('');
   setShowModal(false);
-};
-
-  
+}; 
 
   const deleteRecipe = (id) => {
   setRecipes(recipes.filter(r => r.id !== id));
@@ -89,6 +90,19 @@ function App() {
   setSteps(r.steps);
   setUrl(r.url || '');
   setShowModal(true);
+};
+
+const uploadToCloudinary = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'recipe_upload');
+  
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/ditak4ztk/image/upload`,
+    { method: 'POST', body: formData }
+  );
+  const data = await res.json();
+  return data.secure_url;
 };
 
   React.useEffect(() => {
