@@ -78,6 +78,7 @@ function App() {
     setSteps(r.steps);
     setUrl(r.url || '');
     setShowModal(true);
+    setCardImagePreview(r.cardImagePreview || null);
   };
 
   const addRecipe = async () => {
