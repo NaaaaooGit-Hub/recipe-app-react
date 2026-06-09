@@ -1,70 +1,95 @@
-# Getting Started with Create React App
+# Recipe App 🍳
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+An AI-powered recipe management web app that turns a photo of food into a structured recipe. Snap or upload an image, and the app uses the Claude API to read it and extract the dish name, ingredients, and cooking steps automatically. Built with React, Flask, and a few cloud services.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **AI image-to-recipe analysis** — Upload a food photo and the app calls the Claude API to detect the dish, then extracts the recipe name, ingredients, and step-by-step instructions.
+- **Manual recipe cards** — Add your own recipes with custom card images.
+- **Recipe links** — Save recipes from external URLs, including Instagram.
+- **Cloud image storage** — Images are uploaded to Cloudinary so they persist permanently, not just in the browser.
+- **Local persistence** — Recipes are saved in the browser via `localStorage`, so your data stays after you close the tab.
+- **Edit & delete** — Update any saved recipe (including replacing its image) or remove it with a confirmation prompt.
+- **Bilingual UI** — Toggle the interface between English and Japanese (EN / JA).
+- **Clean formatting** — AI-generated recipes are displayed as readable bulleted lists.
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+| Layer        | Technology                          |
+|--------------|-------------------------------------|
+| Frontend     | React, JavaScript                   |
+| Backend      | Python, Flask                       |
+| AI           | Claude API                          |
+| Image hosting| Cloudinary                          |
+| Storage      | Browser `localStorage`              |
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## How It Works
 
-### `npm test`
+1. The user uploads a food image in the React frontend.
+2. The frontend sends the image to a Flask backend server.
+3. Flask forwards the image to the Claude API with a prompt asking it to identify the dish and return the recipe details.
+4. The API response is formatted into a clean recipe card (name, ingredients, steps).
+5. The image is stored on Cloudinary, and the recipe is saved to `localStorage`.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+> A Flask backend is used as an intermediary to handle the API call and avoid CORS issues from the browser.
 
-### `npm run build`
+## Getting Started
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Prerequisites
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Node.js and npm
+- Python 3
+- A Claude API key
+- A Cloudinary account
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Setup
 
-### `npm run eject`
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/NaaaaooGit-Hub/recipe-app-react.git
+   cd recipe-app-react
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+2. Install frontend dependencies:
+   ```bash
+   npm install
+   ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+3. Install backend dependencies:
+   ```bash
+   pip install flask flask-cors requests
+   ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+4. Create a `.env` file in the project root and add your keys:
+   ```
+   API_KEY=your_api_key_here
+   CLOUDINARY_URL=your_cloudinary_url_here
+   ```
+   > **Note:** `.env` is listed in `.gitignore` and is never committed. Keep your API keys private.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+5. Start the Flask backend:
+   ```bash
+   python server.py
+   ```
 
-## Learn More
+6. Start the React frontend (in a separate terminal):
+   ```bash
+   npm start
+   ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+7. Open the app in your browser at the address shown in the terminal.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Future Improvements
 
-### Code Splitting
+- User accounts so recipes sync across devices
+- Search and filtering by ingredient
+- Recipe categories and tags
+- Shopping list generation from selected recipes
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## About
 
-### Analyzing the Bundle Size
+I love cooking, and I'm always screenshotting recipes and food photos on my phone. The problem is they pile up and get lost — when I want to cook something again, I can never find the right picture. I built this app to solve that small everyday frustration: a place to capture a food photo, automatically turn it into an organized recipe, and find it again easily later.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+*Built by [NaaaaooGit-Hub](https://github.com/NaaaaooGit-Hub)*
